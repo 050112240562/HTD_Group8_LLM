@@ -1,0 +1,12 @@
+Thêm vào .env cạnh server.py (không gửi mật khẩu vào chat):
+GMAIL_SENDER=dia_chi_gmail_cua_ban@gmail.com
+GMAIL_APP_PASSWORD=mat_khau_ung_dung
+
+Bật xác minh hai bước và tạo App Password tại https://myaccount.google.com/apppasswords
+Không dùng mật khẩu đăng nhập hoặc mã OTP. Không đưa .env lên GitHub.
+Khởi động lại python3 server.py. Mở http://127.0.0.1:8000/customer.html
+Tạo kế hoạch, xem giải thích, nhập email, xác nhận rồi bấm gửi ở bước 4.
+Email đính kèm cùng PDF như nút tải, lấy từ kế hoạch đã lưu phía server.
+Giới hạn một lần gửi mỗi phút cho từng kế hoạch, không tự gửi khi tính lại.
+Đây là máy chủ demo cục bộ; chưa dành cho public Internet.
+Chatbot chưa được bổ sung.

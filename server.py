@@ -9,7 +9,8 @@ from pathlib import Path
 import sys
 import tempfile
 import time
-from urllib.parse import unquote
+import threading
+from urllib.parse import unquote, urlsplit
 from uuid import uuid4
 
 ROOT = Path(__file__).resolve().parent
@@ -28,6 +29,10 @@ from src.report_generator import generate_report, ReportError
 CASES = json.loads((PROJECT / 'data/test_cases.json').read_text(encoding='utf-8'))['cases']
 SAMPLES = {c['case_id']: c for c in CASES if c['case_id'] in {'P001', 'P006', 'P019', 'P009'}}
 PLANS: dict[str, dict] = {}
+MAIL_LOCK = threading.Lock()
+from src.email_delivery import send_plan_email
+from src.chatbot import reply as chat_reply
+from src.gemini_client import GeminiError
 
 
 def create_plan(payload: dict) -> dict:
@@ -79,8 +84,28 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_response(code); self.send_header('Content-Type', 'application/json; charset=utf-8')
         self.send_header('Cache-Control', 'no-store'); self.send_header('Content-Length', str(len(content)))
         self.end_headers(); self.wfile.write(content)
+    def static_allowed(self):
+        path = Path(self.translate_path(self.path)).resolve()
+        try:
+            parts = path.relative_to(ROOT).parts
+        except ValueError:
+            return False
+        return (not any(part.startswith('.') for part in parts)
+                and path.suffix.lower() in {'.html','.css','.js','.png','.jpg','.jpeg','.webp','.svg','.ico','.mp4','.woff','.woff2','.ttf','.pdf'}
+                and not any(part in {'src','config','data','tests','docs','outputs','scripts'} for part in parts))
+    def do_HEAD(self):
+        if not self.static_allowed():
+            self.send_error(404); return
+        super().do_HEAD()
+    def list_directory(self, path):
+        self.send_error(404)
+        return None
     def do_GET(self):
-        if self.path == '/api/config':
+        if self.path == '/':
+            self.path = '/index.html'
+        if self.path == '/healthz':
+            self.json_response({'ok': True})
+        elif self.path == '/api/config':
             self.json_response({'samples': [{'id': k, 'goal': c['expected_profile']['goal_name'], 'text': c['input_text']} for k,c in SAMPLES.items()],
                                 'defaults': reference_assumptions(), 'scenario_defaults': load_scenario_defaults()['scenarios'], 'limits': load_scenario_defaults()['limits'], 'ai_configured': bool(get_gemini_status()['configured']),
                                 'ai_provider': 'Gemini', 'ai_model': get_gemini_status()['model'],
@@ -91,12 +116,15 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_error(404)
         elif self.path.split('?')[0].rstrip('/') == '/server.py':
             self.send_error(404)
+        elif not self.static_allowed():
+            self.send_error(404)
         else: super().do_GET()
     def do_POST(self):
         try:
             origin = self.headers.get('Origin')
-            if origin and origin != 'http://' + self.headers.get('Host', ''):
-                self.json_response({'error': 'Hãy mở web bằng địa chỉ dịch vụ cục bộ.'}, 403); return
+            host = self.headers.get('Host', '')
+            if origin and origin not in {'http://' + host, 'https://' + host}:
+                self.json_response({'error': 'Hãy mở chức năng này từ cùng địa chỉ website.'}, 403); return
             if self.headers.get('Content-Type', '').split(';')[0] != 'application/json':
                 self.json_response({'error': 'Cần dữ liệu JSON.'}, 415); return
             length = int(self.headers.get('Content-Length', 0))
@@ -118,6 +146,11 @@ class Handler(SimpleHTTPRequestHandler):
                 p = parse_financial_profile(payload['profile']).to_profile_dict()
                 self.json_response(validate_profile(p, payload.get('assumptions', reference_assumptions())))
             elif self.path == '/api/plan': self.json_response(create_plan(payload))
+            elif self.path == '/api/chat':
+                plan = get_plan(payload)
+                if payload.get('consent') is not True:
+                    raise ValueError('Cần đồng ý gửi kế hoạch và câu hỏi đến Gemini để trò chuyện.')
+                self.json_response(chat_reply(plan, payload.get('message')))
             elif self.path == '/api/explain':
                 plan = get_plan(payload)
                 use_llm = payload.get('use_llm') is True
@@ -125,7 +158,7 @@ class Handler(SimpleHTTPRequestHandler):
                 out = generate_explanation_result(plan['profile'], plan['calculation_result'], plan['scenario_result'], plan['validation_result'], use_llm=use_llm)
                 plan['explanation'] = out
                 self.json_response(out)
-            elif self.path == '/api/report':
+            elif self.path in ('/api/report', '/api/email'):
                 plan = get_plan(payload)
                 if payload.get('report_confirmed') is not True: raise ValueError('Bạn cần đọc và xác nhận nội dung trước khi tải PDF.')
                 explanation = plan.get('explanation')
@@ -134,12 +167,27 @@ class Handler(SimpleHTTPRequestHandler):
                     path = str(Path(folder) / 'Project09.pdf')
                     generate_report(plan['profile'], {**plan, 'profile_confirmed': True, 'assumptions_confirmed': True, 'report_confirmed': True}, explanation['text'], path)
                     content = Path(path).read_bytes()
+                if self.path == '/api/email':
+                    if payload.get('email_confirmed') is not True:
+                        raise ValueError('Xác nhận gửi báo cáo đến email đã nhập.')
+                    with MAIL_LOCK:
+                        if plan.get('mail_busy') or time.time() - plan.get('mail_last_attempt', 0) < 60:
+                            raise ValueError('Vui lòng chờ một phút trước khi gửi lại.')
+                        plan['mail_busy'] = True
+                        plan['mail_last_attempt'] = time.time()
+                    try:
+                        send_plan_email(payload.get('recipient'), content)
+                    finally:
+                        with MAIL_LOCK:
+                            plan['mail_busy'] = False
+                    self.json_response({'sent': True, 'message': 'Gmail đã tiếp nhận email. Hãy kiểm tra hộp thư và thư rác.'})
+                    return
                 self.send_response(200); self.send_header('Content-Type', 'application/pdf')
                 self.send_header('Content-Disposition', 'attachment; filename="HTD_Project09_Plan.pdf"')
                 self.send_header('Cache-Control', 'no-store'); self.send_header('Content-Length', str(len(content)))
                 self.end_headers(); self.wfile.write(content)
             else: self.json_response({'error': 'Không tìm thấy chức năng này.'}, 404)
-        except (ValueError, TypeError, KeyError, ScenarioInputError, ExtractionError, ExplanationError, ReportError) as exc:
+        except (ValueError, TypeError, KeyError, ScenarioInputError, ExtractionError, ExplanationError, ReportError, GeminiError) as exc:
             self.json_response({'error': str(exc)}, 400)
         except Exception:
             self.json_response({'error': 'Chưa xử lý được yêu cầu. Hãy kiểm tra thiết lập hoặc thử lại.'}, 500)
@@ -147,7 +195,8 @@ class Handler(SimpleHTTPRequestHandler):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--port', type=int, default=8000)
+    parser.add_argument('--port', type=int, default=int(os.getenv('PORT', '8000')))
+    parser.add_argument('--host', default='0.0.0.0' if os.getenv('PORT') else '127.0.0.1')
     args = parser.parse_args()
     print(f'Mở http://127.0.0.1:{args.port}/index.html ; Services: /customer.html', flush=True)
-    ThreadingHTTPServer(('127.0.0.1', args.port), Handler).serve_forever()
+    ThreadingHTTPServer((args.host, args.port), Handler).serve_forever()

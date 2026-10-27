@@ -1,0 +1,9 @@
+Đã kiểm tra: cú pháp Python và JavaScript; 30 kiểm tra JavaScript cũ đạt.
+13 kiểm tra tập trung đạt: bốn câu tiếng Việt trước đây bị chặn nhầm được chấp nhận;
+chặn số liệu, cam kết, mua cổ phiếu, dùng hết dự phòng và kết luận tự thêm;
+SMTP mô phỏng đính kèm đúng bytes PDF và từ chối địa chỉ không hợp lệ.
+Chưa chạy đầy đủ pytest vì môi trường thiếu pytest, dotenv và httpx.
+Chưa gọi Gemini thật hoặc Gmail thật vì không có cấu hình bí mật của người dùng.
+Chưa kiểm tra tương tác trình duyệt cho nút email mới.
+Bộ lọc là kiểm tra quy tắc, không bảo đảm hiểu hết ngữ nghĩa tiếng Việt.
+Server ghi trường và quy tắc gây loại; không lưu toàn văn phản hồi nhạy cảm.

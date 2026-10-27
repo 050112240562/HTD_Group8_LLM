@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: htd-project09
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py --host 0.0.0.0
+    healthCheckPath: /healthz
+    envVars:
+      - key: EMAIL_TRANSPORT_DISABLED
+        value: "true"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: GEMINI_TIMEOUT_SECONDS
+        value: "45"
+      - key: GMAIL_SENDER
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false

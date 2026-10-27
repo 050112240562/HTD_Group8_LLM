@@ -21,6 +21,7 @@
     ['risk_tolerance','Mức chấp nhận biến động','level','Giới hạn lợi suất demo; chưa đánh giá sự phù hợp của sản phẩm đầu tư'],
     ['liquidity_need','Nhu cầu rút tiền sớm','level','Chỉ ghi nhận, chưa mô phỏng các lần rút tiền']
   ];
+  let chatBusy=false, chatVersion=0;
   let cfg, mode='sample', profile=null, plan=null, pending=false, pdfUrl=null, sequence=0, busy=false, explained=false;
   const esc = val => String(val ?? '').replace(/[&<>"']/g, x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
   const money = val => val == null ? 'Chưa xác định' : new Intl.NumberFormat('vi-VN',{maximumFractionDigits:0}).format(val)+' ₫';
@@ -57,16 +58,21 @@
     try{await fn();}catch(e){error(e.message);}finally{busy=false;button.textContent=text;button.removeAttribute('aria-busy');syncButtons();}
   }
   function syncButtons(){
+    if($('chatForm')) $('chatForm').closest('.p9-chat').hidden=!plan||pending;
+    if($('chatQuestion')) $('chatQuestion').disabled=busy||chatBusy;
+    if($('chatSend')) $('chatSend').disabled=busy||chatBusy||!plan||pending||!cfg?.ai_configured||!$('chatConsent').checked;
     $('extract').disabled=busy||!cfg;$('makePlan').disabled=busy||!profile;
     $('recalculate').disabled=busy||!profile;
     $('explain').disabled=busy||!plan||pending;
+    $('sendEmail').disabled=busy||!plan||pending||!explained||!$('assumptionsConfirmed').checked||!$('emailConsent').checked;
     $('download').disabled=busy||!plan||pending||!explained||!$('assumptionsConfirmed').checked;
     $('aiExplain').disabled=busy||!cfg?.ai_configured||!$('aiCommentConsent').checked||!plan||pending||!explained;
     $('aiMode').disabled=busy||!cfg?.ai_configured;
     syncNavigation();
     document.querySelectorAll('[data-result-page]').forEach(button=>button.disabled=busy||(pending&&button.dataset.resultPage!=='adjustments'));
   }
-  function clearReport(){explained=false;$('report').hidden=true;$('reportConfirmed').checked=false;$('assumptionsConfirmed').checked=false;$('pdfLink').hidden=true;if(pdfUrl){URL.revokeObjectURL(pdfUrl);pdfUrl=null;}syncButtons();}
+  function clearChat(){chatVersion++;if($('chatMessages'))$('chatMessages').replaceChildren();if($('chatStatus'))$('chatStatus').textContent='';}
+  function clearReport(){clearChat();explained=false;$('emailConsent').checked=false;$('emailStatus').textContent='';$('report').hidden=true;$('reportConfirmed').checked=false;$('assumptionsConfirmed').checked=false;$('pdfLink').hidden=true;if(pdfUrl){URL.revokeObjectURL(pdfUrl);pdfUrl=null;}syncButtons();}
   function invalidate(){sequence++;plan=null;pending=false;$('results').hidden=true;clearReport();$('profileConfirmed').checked=false;clearValidation();renderProfileDigest();step(2);}
   function changedAssumptions(){sequence++;$('profileConfirmed').checked=false;updateReviewAssumptions();if(plan){pending=true;$('pending').hidden=false;document.querySelectorAll('.p9-result-data').forEach(el=>el.hidden=true);resultPage('adjustments');$('usedAssumptions').textContent='Đầu vào đã thay đổi. Cần tính lại trước khi xem giải thích.';clearReport();}}
   function number(id,label,optional=false){const input=$(id);if(input.value.trim()===''){if(optional)return null;throw new Error('Cần nhập '+label+'.');}const val=input.dataset.money==='true'?Money.parse(input.value):Number(input.value);if(!Number.isFinite(val))throw new Error(label+' phải là số hữu hạn.');return val;}
@@ -173,6 +179,26 @@
   step(1);
   $('sample').addEventListener('change',()=>{setSample();$('review').hidden=true;invalidate();step(1);});
   $('description').addEventListener('input',()=>{$('review').hidden=true;invalidate();step(1);});
+
+  function chatLine(role,text){
+    const line=document.createElement('p');line.className='p9-chat-message '+role;
+    const who=document.createElement('strong');who.textContent=role==='user'?'Bạn: ':'HTD: ';
+    line.append(who,document.createTextNode(text));$('chatMessages').append(line);line.scrollIntoView({block:'nearest'});
+  }
+  $('chatConsent').addEventListener('change',()=>{if(!$('chatConsent').checked)chatVersion++;syncButtons();});
+  document.querySelectorAll('[data-chat-question]').forEach(b=>b.addEventListener('click',()=>{$('chatQuestion').value=b.dataset.chatQuestion;$('chatQuestion').focus();}));
+  $('chatForm').addEventListener('submit',async event=>{
+    event.preventDefault();if(busy||chatBusy||!plan||pending||!$('chatConsent').checked)return;
+    const message=$('chatQuestion').value.trim();if(!message)return;
+    const version=chatVersion;chatBusy=true;syncButtons();$('chatStatus').textContent='Gemini đang trả lời…';
+    try{
+      const out=await api('chat',{plan_id:plan.plan_id,assumptions_confirmed:true,consent:true,message});
+      if(version!==chatVersion||pending)return;
+      chatLine('user',message);chatLine('assistant',out.answer);$('chatQuestion').value='';$('chatStatus').textContent='Trả lời bởi Gemini · Còn '+out.remaining+' lượt trong phiên.';
+    }catch(e){if(version===chatVersion)$('chatStatus').textContent=e.message;}
+    finally{chatBusy=false;syncButtons();}
+  });
+
   $('extract').addEventListener('click',()=>action($('extract'),async()=>{const seq=sequence;if(mode==='manual'){renderProfile(blankProfile(),'Nhập thủ công · Không gửi dữ liệu tới AI.');return;}const result=await api(mode==='sample'?'sample':'extract',mode==='sample'?{id:$('sample').value,text:$('description').value}:{text:$('description').value,consent:$('consent').checked});if(seq!==sequence)return;renderProfile(result.profile,result.source==='sample'?'Hồ sơ mẫu giả lập · Bạn có thể sửa mọi ô.':'Bản nháp từ Gemini · Đối chiếu với mô tả gốc trước khi tính.');}));
   async function calculate(){
     if(!$('profileConfirmed').checked){editProfile();throw new Error('Kiểm tra thông tin và giả định rồi đánh dấu xác nhận trước khi tính.');}
@@ -212,9 +238,16 @@
   }
   async function explain(useLLM){const seq=sequence;$('explanationMode').textContent=useLLM?'Đang tạo nhận xét Gemini…':'Đang chuẩn bị giải thích từ kết quả…';let out;try{out=await api('explain',{plan_id:plan?.plan_id,assumptions_confirmed:true,use_llm:useLLM,consent:$('aiCommentConsent').checked});}catch(e){$('explanationMode').textContent='Chưa tạo được giải thích mới. Bạn có thể thử lại hoặc dùng giải thích tiêu chuẩn.';throw e;}if(seq!==sequence||pending)return;
     explained=true;$('assumptionsConfirmed').checked=true;$('report').hidden=false;renderExplanation(out.text,out);
-    $('explanationMode').textContent=out.mode==='live_llm'?'Phân tích từ số liệu · Có nhận xét bổ sung của Gemini':out.mode==='fallback'||out.failure_code?'Phân tích từ số liệu · Chưa nhận được nhận xét Gemini':'Phân tích từ số liệu · Chưa dùng Gemini';
+    $('explanationMode').textContent=out.mode==='live_llm'?'Phân tích từ số liệu · Có nhận xét bổ sung của Gemini':out.llm_completed&&!out.llm_accepted?'Đã nhận Gemini nhưng nhận xét bị loại qua kiểm tra. '+(out.failure_reason||out.failure_code||''):out.llm_attempted?'Gọi Gemini chưa thành công: '+(out.failure_code||'lỗi kết nối'):out.failure_code?'Chưa gọi Gemini: '+out.failure_code:'Phân tích từ số liệu · Chưa dùng Gemini';
     $('reportConfirmed').checked=false;$('pdfLink').hidden=true;step(4);$('report').scrollIntoView({behavior:'smooth',block:'start'});syncButtons();}
   $('explain').addEventListener('click',()=>action($('explain'),()=>explain(false)));$('aiExplain').addEventListener('click',()=>action($('aiExplain'),()=>explain(true)));
+  $('emailConsent').addEventListener('change',syncButtons);
+  $('sendEmail').addEventListener('click',()=>action($('sendEmail'),async()=>{
+    const input=$('emailRecipient');if(!input.value.trim()||!input.checkValidity())throw new Error('Nhập địa chỉ email hợp lệ.');
+    const seq=sequence;$('emailStatus').textContent='Đang gửi báo cáo…';
+    try{const out=await api('email',{plan_id:plan?.plan_id,assumptions_confirmed:true,report_confirmed:true,email_confirmed:$('emailConsent').checked,recipient:input.value.trim()});if(seq===sequence)$('emailStatus').textContent=out.message;}
+    catch(error){$('emailStatus').textContent=error.message;throw error;}
+  }));
   $('download').addEventListener('click',()=>action($('download'),async()=>{const seq=sequence;const blob=await api('report',{plan_id:plan?.plan_id,assumptions_confirmed:true,report_confirmed:true},true);if(seq!==sequence||pending)return;$('reportConfirmed').checked=true;if(pdfUrl)URL.revokeObjectURL(pdfUrl);pdfUrl=URL.createObjectURL(blob);const a=document.createElement('a');a.href=pdfUrl;a.download='HTD_Project09_Plan.pdf';a.click();$('pdfLink').href=pdfUrl;$('pdfLink').hidden=false;}));
   api('config').then(config=>{cfg=config;$('sample').innerHTML=cfg.samples.map(s=>`<option value="${esc(s.id)}">${esc(s.id+' — '+(s.goal||'Hồ sơ cần bổ sung'))}</option>`).join('');setSample();$('annualReturn').value=Number((cfg.defaults.annual_return_rate*100).toFixed(4));$('inflation').value=Number(((cfg.defaults.annual_inflation_rate||0)*100).toFixed(4));$('assumptionNote').textContent='Giả định phục vụ mô phỏng, chưa được hiệu chỉnh bằng dữ liệu thực nghiệm. Lợi suất tối đa: thấp 6%, trung bình 8%, cao 10%/năm; đây là giới hạn demo.';updateReviewAssumptions();$('connection').textContent='Sẵn sàng lập kế hoạch';$('aiAvailability').textContent=cfg.ai_configured?'Chỉ gửi mục tiêu và kết quả khi bạn đồng ý.':'Gemini chưa được thiết lập trên phiên này. Bạn vẫn có thể đọc phân tích và tải PDF.';syncButtons();}).catch(()=>{$('connection').innerHTML='<b>Chưa kết nối được phần tính toán.</b> Mở trang bằng địa chỉ trong hướng dẫn sau khi chạy <code>python server.py</code>.';$('extract').disabled=true;document.querySelectorAll('[data-mode]').forEach(b=>b.disabled=true);});
 })();

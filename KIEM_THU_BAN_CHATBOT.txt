@@ -1,0 +1,17 @@
+HTD ONLINE + CHATBOT — 27/10/2026
+
+Đã chạy:
+- 15 kiểm thử Python đều đạt: API tính toán, xác nhận hồ sơ, xuất PDF đọc được, quyền truy cập nguồn/config, HTTPS Origin, health check, đồng ý gửi chat, phiên hết hạn, từ chối ngoài phạm vi bằng phản hồi giả lập, bỏ user_id khỏi ngữ cảnh, giới hạn lượt, chế độ tắt SMTP và đính kèm email bằng mock.
+- 13 kiểm thử JavaScript đều đạt: nhập số tiền Việt Nam và trình bày kết quả kế hoạch.
+- Node kiểm tra cú pháp project09-service.js đạt.
+- Kiểm tra DOM bằng jsdom với API local thật: mẫu → xác nhận hồ sơ → tính kế hoạch → xuất hiện chatbot → nút câu hỏi gợi ý → không cho gửi khi thiếu cấu hình Gemini. Không có lỗi thực thi JavaScript.
+- pip kiểm tra giải quyết requirements.txt thành công (dry run, không phải build thực trên Render).
+- Quét bản đóng gói: không có giá trị API key/Gmail password trùng .env gốc; không đóng gói .env thật hoặc .venv.
+
+Chưa kiểm tra:
+- Hình thức hiển thị bằng trình duyệt thật (môi trường thiếu Chromium, tải trình duyệt không thành công). DOM test không thay thế kiểm tra trực quan.
+- Gemini thật, chất lượng diễn giải và khả năng chống yêu cầu vượt phạm vi qua model thật. Các ca hiện tại kiểm tra logic bằng mock. Prompt không đảm bảo tuyệt đối đầu ra AI.
+- Gửi Gmail thật, khả năng kết nối SMTP trên host được chọn.
+- Build/deploy trên tài khoản Render, quota, model và quyền API của người dùng.
+
+Bản này bổ sung chatbot và cấu hình triển khai demo; chưa được đưa online. Dùng BAT_DAU_ONLINE_CHATBOT.md để chạy và kiểm tra trên tài khoản thật.
