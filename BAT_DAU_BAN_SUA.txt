@@ -1,0 +1,83 @@
+HTD LLM — GIAO DIỆN THEO FILE MẪU, GIỮ TÁC VỤ ĐÃ CHỐT — 23/10/2026
+
+CÁCH MỞ
+1. Giải nén bản đầy đủ vào một thư mục riêng.
+2. Mở Terminal tại thư mục HTD_LLM_Gemini, cùng cấp server.py.
+3. Nếu chưa có môi trường, chạy:
+   python3 -m venv .venv
+   source .venv/bin/activate
+   python3 -m pip install -r requirements.txt
+4. Nếu đã có môi trường cũ với đủ thư viện, có thể dùng lại môi trường đó.
+5. Chạy:
+   python3 server.py
+6. Mở http://127.0.0.1:8000/customer.html
+   Nếu trình duyệt còn giữ giao diện cũ, tải lại bằng Command+Shift+R.
+
+GEMINI
+Nếu đã có cấu hình, chép project09/.env từ thư mục cũ sang thư mục mới.
+File .env cạnh server.py cũng được hỗ trợ như bản gốc.
+Bản ZIP không kèm API key. Hồ sơ mẫu, nhập tay, giải thích tiêu chuẩn và PDF
+vẫn chạy khi chưa cấu hình Gemini. Bản sửa giữ nguyên nhà cung cấp/model
+của bản gốc; không tự chọn thêm dịch vụ AI.
+
+NHỮNG GÌ ĐÃ SỬA
+- Cập nhật giao diện theo HTD_LLM_Gemini_Full(1).zip: phần đầu trang xanh
+  đậm chuyển sắc, tiêu đề trắng/vàng, nút xanh tím, khối trắng bo góc trên nền kem.
+- File mẫu chỉ cung cấp giao diện. Giữ nguyên mã JavaScript, Python, cấu hình,
+  biểu đồ, xử lý Gemini/PDF, 4 bước và 5 tác vụ của bản đã thống nhất.
+- Hồ sơ mẫu/AI hiện mục tiêu và sáu số liệu chính trước; biểu mẫu nằm trong
+  mục mở rộng. Nhập tay mở sẵn biểu mẫu; lỗi kiểm tra cũng tự mở ô cần sửa.
+- Tổng quan tập trung vào kết luận, ba số liệu chính và việc nên làm tiếp theo.
+- Phân tích chia ba khối: Kết quả, Vì sao, Điều cần chú ý và bước tiếp theo.
+  Thiếu nguồn tiền, nhu cầu rút sớm và việc dùng hết dòng tiền dư được nêu rõ.
+- Giải thích đầy đủ mở khi cần; PDF vẫn dùng toàn bộ nội dung từ Python.
+- Tách công cụ tải PDF và nhận xét Gemini khỏi phần đọc phân tích. Nguồn nhận
+  xét được ghi rõ, giải thích tiêu chuẩn không được gắn nhãn là AI.
+- Số tiền lớn trong tóm tắt viết bằng triệu/tỷ; có số chính xác khi trỏ chuột,
+  qua trình đọc màn hình và trong mục giải thích/số liệu đầy đủ.
+- Ô tiền tự thêm dấu chấm (8.000.000); Python vẫn nhận số 8000000.
+  Có thể dán 8.000.000 hoặc 8,000,000; số tiền sai định dạng sẽ bị báo lỗi.
+- Mỗi lần chỉ hiện một trong bốn màn hình: Nhập thông tin, Kiểm tra hồ sơ,
+  Xem kế hoạch, Giải thích & PDF. Thanh bước cho phép quay lại mà giữ thông tin.
+- Kế hoạch tách thành năm mục riêng: Tổng quan, Tích lũy, Dòng tiền,
+  Ba kịch bản, Thử thay đổi. Không cần cuộn xuyên qua tất cả tác vụ.
+- Màu kem, xanh đậm, vàng và kiểu tiêu đề được đồng bộ với trang HTD.
+- Giao diện Services sáng, chữ lớn hơn, chia trường nhập thành nhóm.
+- Hiện đơn vị, ví dụ và lỗi tại trường nhập khi bộ kiểm tra trả về.
+- Hiện giả định trước khi tính; sửa lỗi tỷ lệ thập phân gây chặn form.
+- Kết luận phân biệt đủ tiền theo phép tính với đủ nguồn góp thực tế.
+- Có bước tiếp theo: cần góp bao nhiêu, tăng bao nhiêu, còn vượt khả năng bao nhiêu;
+  hiển thị thời điểm chạm mục tiêu theo cùng giả định khi có kết quả.
+- Biểu đồ tích lũy có mục tiêu theo lạm phát, mốc thời hạn, chọn tháng và bật
+  so sánh 3 kịch bản; tách vốn tự góp và phần tăng trưởng giả định.
+- Phân bổ tháng bằng thanh ngang và bảng số tiền; chỉ rõ thiếu nguồn tiền.
+- Biểu đồ 3 cột và bảng giải thích đầy đủ các giả định cùng thay đổi.
+- Khi sửa đầu vào, ẩn kết quả và báo cáo cũ tới khi tính lại.
+- Nút xác nhận gắn trực tiếp với xem giải thích và tải PDF trên Services.
+- Giải thích gắn với kết quả, nhu cầu rút tiền và khả năng chi trả; cảnh báo
+  của phương án khác được gắn tên kịch bản.
+- Đồng bộ biểu đồ dùng chung, nội dung giải thích và kết luận PDF/Streamlit.
+
+CÁCH DÙNG NHANH
+Dùng hồ sơ mẫu → Tạo bản nháp → Kiểm tra các ô và giả định → Xác nhận →
+Xem kế hoạch → Đọc kết luận, biểu đồ và bước tiếp theo → Xem phân tích &
+báo cáo → Xác nhận nội dung và tải PDF.
+Nhận xét Gemini là tùy chọn, được bật sau khi đồng ý gửi dữ liệu.
+
+GIỚI HẠN GIỮ NGUYÊN
+- Mỗi kế hoạch hiện có một mục tiêu; chưa phân bổ tự động giữa nhiều mục tiêu.
+- Nhu cầu rút tiền sớm được ghi nhận và nhắc trong giải thích; chưa mô phỏng
+  các lần rút tiền. Quỹ dự phòng chưa tự động bù thiếu hụt sinh hoạt.
+- Các mức thay đổi kịch bản là giả định demo, chưa được hiệu chỉnh thực nghiệm.
+- Mô hình chưa tính thuế, phí, biến động ngẫu nhiên hoặc tăng thu nhập lũy tiến.
+- Các trang HTML khác được giữ lại. Services cần chạy Python; mở bằng file://
+  hoặc chỉ đưa HTML lên GitHub Pages sẽ không chạy phần tính và xuất PDF.
+
+KIỂM TRA
+Bản nền đã qua 508 bài kiểm tra Python. Bản trước khi đổi giao diện mẫu đã
+đạt 90 bài tính toán/API/PDF liên quan và 30 bài JavaScript. Đợt này đối chiếu
+mã nguồn để xác nhận JavaScript, Python, cấu hình và cấu trúc tác vụ giữ nguyên.
+Đã kiểm tra thao tác giao diện bằng dữ liệu mẫu tính từ Python, ở khung máy tính
+và khung điện thoại 390 px; API và PDF được kiểm tra riêng bằng HTTP cục bộ.
+Chưa gọi Gemini trực tuyến bằng key thật. Các tài liệu/đầu ra mẫu lịch sử
+có sẵn trong bản gốc không phải kết quả đánh giá Gemini mới.

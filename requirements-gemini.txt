@@ -1,0 +1,2 @@
+# Additional SDK for an existing HTD_LLM virtual environment.
+google-genai==2.32.0

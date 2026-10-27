@@ -1,0 +1,10 @@
+GEMINI MIGRATION — 23/10/2026
+
+503 automated tests passed (HTTP service, calculation/scenario/PDF contracts,
+profile extraction safeguards, Gemini config, SDK serialization and local
+mock transport, explanation structured output). Duration: 22.07 seconds.
+JavaScript syntax check passed.
+No live Gemini call was made: supplied notebook has no API key filled in.
+No model accuracy, latency or hallucination score is claimed by this report.
+The model default and free tier were checked against official Google docs.
+Financial calculations/scenario/stress functions are unchanged from the source.

@@ -1,0 +1,9 @@
+Kiểm tra hai phiên bản HTD
+
+- Tất cả 140 tệp nguồn giữ nguyên byte trong bản FI.
+- Trong 140 tệp nguồn chung, bản LLM chỉ thay customer.html.
+- Bản LLM thêm CSS/JS của Service, server Python, Project 9 và hướng dẫn.
+- 17 kiểm tra bản FI đạt.
+- 8 kiểm tra HTTP/Python mới đạt.
+- Kiểm tra tích hợp DOM/HTTP: hồ sơ mẫu, ba phương án, mức giảm 0%, cập nhật giảm thu nhập, xác nhận, PDF ngoại tuyến, hủy kết quả cũ khi sửa hồ sơ, chặn dữ liệu thiếu đều đạt.
+- Kiểm tra DOM không thay thế việc kiểm tra bố cục trực tiếp trên trình duyệt.

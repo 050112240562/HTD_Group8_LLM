@@ -1,0 +1,68 @@
+HTD LLM — KẾT NỐI GEMINI (23/10/2026)
+
+Bản này chuyển phần đọc mô tả và nhận xét kết quả sang Google Gemini, dùng
+google-genai như notebook genai.ipynb. Các phép tính Python được giữ nguyên.
+
+A. NẾU ĐANG DÙNG BẢN WEB CŨ
+1. Dừng web bằng Control+C trong Terminal đang chạy server.py.
+2. Giải nén HTD_LLM_Gemini_Update.zip. Chép CAP_NHAT_GEMINI.py vào thư mục
+   HTD_LLM hiện tại, cùng cấp server.py. Không cần chép đè thư mục project09.
+3. Tại Terminal trong HTD_LLM và môi trường .venv đang dùng, chạy:
+   python3 CAP_NHAT_GEMINI.py
+   python3 -m pip install -r requirements-gemini.txt
+4. Cập nhật .env theo mục C, rồi chạy python3 server.py.
+   Bộ cập nhật giữ nguyên .env và tạo thư mục sao lưu những file được thay.
+
+B. NẾU DÙNG BẢN ĐẦY ĐỦ HTD_LLM_Gemini_Full.zip
+Giải nén vào thư mục riêng, mở Terminal trong HTD_LLM_Gemini rồi chạy:
+   python3 -m venv .venv
+   source .venv/bin/activate
+   python3 -m pip install -r requirements.txt
+Sau đó thực hiện mục C và chạy python3 server.py.
+
+C. API KEY
+Tạo hoặc sửa file project09/.env (không phải .env.txt):
+   GEMINI_API_KEY=dan_key_GOOGLE_AI_STUDIO_cua_ban
+   GEMINI_MODEL=gemini-3.5-flash-lite
+   GEMINI_TIMEOUT_SECONDS=45
+
+Web cũng đọc .env cùng cấp server.py. Nếu cả hai nơi có key, project09/.env
+được ưu tiên. Không cần gửi key cho người khác; không đưa .env lên GitHub.
+GOOGLE_API_KEY cũng được hỗ trợ. Nếu bản cũ đặt key Google bắt đầu AIza trong
+OPENAI_API_KEY thì vẫn được nhận để chuyển tiếp, nhưng nên đổi tên thành
+GEMINI_API_KEY để tránh nhầm nhà cung cấp. Key sk- của OpenAI không dùng được.
+
+D. CHẠY VÀ KIỂM TRA
+   python3 check_gemini.py
+Lệnh trên chỉ kiểm tra cấu hình, không gọi AI, không in key.
+Muốn thử một yêu cầu Gemini thật, không chứa dữ liệu cá nhân:
+   python3 check_gemini.py --live
+Lệnh --live dùng quota và có thể tính phí theo model/project Google AI Studio.
+Sau đó khởi động web:
+   python3 server.py
+Mở http://127.0.0.1:8000/customer.html rồi tải lại trang (Command+R).
+Chọn Nhờ Gemini đọc mô tả, nhập hồ sơ giả lập, tích đồng ý, Tạo bản nháp.
+Kiểm tra và xác nhận hồ sơ, xem kết quả, xác nhận giả định rồi chọn nhận xét
+Gemini nếu muốn thử phần diễn giải. PDF ngoại tuyến không cần gọi Gemini.
+
+E. MODEL VÀ HẠN MỨC
+Notebook dùng gemini-2.5-flash. Theo Google ngày kiểm tra 23/10/2026, quyền
+truy cập dòng 2.5 bị hạn chế với dự án mới. Vì vậy bản web mặc định dùng
+gemini-3.5-flash-lite, có Free Tier được Google công bố. Nếu project đã có
+quyền dùng model notebook, có thể đổi GEMINI_MODEL=gemini-2.5-flash.
+Không tự đổi sang model trả phí khi model đã chọn bị lỗi. Free Tier có hạn
+mức, không bảo đảm mọi tài khoản đều gọi được. Kiểm tra Usage/Rate limits.
+Tạo key mới trong cùng project không làm tăng quota.
+
+F. GIỚI HẠN KIỂM TRA
+Đã kiểm tra logic ngoại tuyến và Google SDK bằng HTTP giả lập. Không có key
+Gemini trong notebook được gửi, nên chưa thực hiện cuộc gọi Gemini trực tuyến.
+Thông báo nhận cấu hình không có nghĩa key/model/quota đã được xác minh.
+Các kết quả đánh giá OpenAI cũ trong tài liệu lịch sử không phải số đo Gemini.
+Đây là thay đổi nhà cung cấp AI; chưa bổ sung tính năng phân rã mục tiêu mới.
+
+Nguồn tham khảo:
+https://googleapis.github.io/python-genai/
+https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash
+https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite
+https://ai.google.dev/gemini-api/docs/pricing

@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>HTD SECURITIES - Investment Recommendation Report</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+
+body{
+    background:#e5e7eb;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.a4-page{
+    width:210mm;
+    min-height:297mm;
+    background:white;
+}
+
+.watermark{
+    position:absolute;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    pointer-events:none;
+    opacity:0.04;
+    z-index:0;
+}
+
+.content-layer{
+    position:relative;
+    z-index:2;
+}
+/* HEADER LOGO */
+.logo{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:white;
+    padding:8px 18px;
+    border-radius:14px;
+    overflow:hidden;
+}
+
+.logo img{
+    height:100px;
+    width:auto;
+    object-fit:contain;
+    display:block;
+}
+
+/* PDF + FORM TOP LOGO */
+.report-logo{
+    height:100px;
+    width:auto;
+    object-fit:contain;
+    display:block;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+
+    <div class="logo">
+        <img src="DOBN/logo.png">
+    </div>
+
+    <nav>
+
+        <a href="index.html" class="active">
+            <i class="fas fa-home"></i> Homepage
+        </a>
+
+        <a href="about.html">
+            <i class="fas fa-building"></i> About Us
+        </a>
+
+        <a href="products.html">
+            <i class="fas fa-briefcase"></i> Products
+        </a>
+
+        <a href="customer.html" class="highlight-nav">
+            <i class="fas fa-user-tie"></i> Services
+        </a>
+
+        <a href="stocks.html">
+            <i class="fas fa-chart-line"></i> Stock
+        </a>
+
+        <a href="esg.html">
+            <i class="fas fa-leaf"></i> ESG
+        </a>
+
+        <a href="news.html">
+            <i class="fas fa-newspaper"></i> News
+        </a>
+
+        <a href="support.html">
+            <i class="fas fa-headset"></i> Support
+        </a>
+
+    </nav>
+        <div class="auth-buttons">
+            <button class="btn-login">Đăng Nhập</button>
+            <button class="btn-register">Mở Tài Khoản</button>
+        </div>
+</header>
+
+<div class="max-w-7xl mx-auto p-8">
+
+<!-- ================= FORM ================= -->
+<form id="financialForm"
+class="bg-white rounded-2xl shadow-2xl p-10 mb-12">
+
+<!-- TOP -->
+<div class="flex items-center border-b-4 border-[#04045d] pb-6 mb-10">
+
+    <img src="DOBN/logo.png"
+     class="report-logo mr-6">
+
+    <div>
+
+        <h1 class="text-5xl font-black text-[#04045d]">
+            HTD SECURITIES
+        </h1>
+
+        <p class="text-gray-500 tracking-[5px] mt-2">
+            INVESTMENT RECOMMENDATION REPORT
+        </p>
+
+    </div>
+
+</div>
+
+<!-- CLIENT -->
+<div class="mb-12">
+
+    <h2 class="text-2xl font-black text-[#04045d] border-b-2 border-[#04045d] pb-2 mb-8">
+
+        THÔNG TIN KHÁCH HÀNG
+
+        <span class="text-gray-500 text-lg">
+            (CLIENT'S INFORMATION)
+        </span>
+
+    </h2>
+
+    <div class="grid grid-cols-2 gap-6">
+
+        <div>
+            <label class="font-semibold">
+                HỌ VÀ TÊN (NAME)
+            </label>
+
+            <input type="text"
+            id="custName"
+            required
+            class="w-full border mt-2 p-3 rounded">
+        </div>
+
+        <div>
+            <label class="font-semibold">
+                SỐ CCCD (ID)
+            </label>
+
+            <input type="text"
+            id="custID"
+            class="w-full border mt-2 p-3 rounded">
+        </div>
+
+        <div>
+            <label class="font-semibold">
+                QUỐC TỊCH (NATIONALITY)
+            </label>
+
+            <select id="custNationality"
+            class="w-full border mt-2 p-3 rounded">
+
+                <option>Vietnam</option>
+                <option>Singapore</option>
+                <option>Thailand</option>
+                <option>Malaysia</option>
+                <option>Japan</option>
+                <option>Korea</option>
+                <option>France</option>
+                <option>United Kingdom</option>
+                <option>Russia</option>
+                <option>Australia</option>
+                <option>United States</option>
+
+            </select>
+        </div>
+
+        <div>
+            <label class="font-semibold">
+                EMAIL
+            </label>
+
+            <input type="email"
+            id="custEmail"
+            class="w-full border mt-2 p-3 rounded">
+        </div>
+
+        <div>
+            <label class="font-semibold">
+                SỐ ĐIỆN THOẠI (PHONE)
+            </label>
+
+            <input type="text"
+            id="custPhone"
+            class="w-full border mt-2 p-3 rounded">
+        </div>
+
+        <div>
+            <label class="font-semibold">
+                ĐỊA CHỈ (ADDRESS)
+            </label>
+
+            <input type="text"
+            id="custAddress"
+            class="w-full border mt-2 p-3 rounded">
+        </div>
+
+    </div>
+
+</div>
+
+<!-- FINANCIAL -->
+<div class="mb-12">
+
+    <!-- TITLE -->
+    <h2 class="text-2xl font-black text-[#04045d] border-b-2 border-[#04045d] pb-2 mb-8">
+        TÌNH HÌNH TÀI CHÍNH
+        <span class="text-gray-500 text-lg">
+            (FINANCIAL SITUATION)
+        </span>
+    </h2>
+
+    <!-- ASSETS -->
+    <h3 class="text-xl font-bold text-[#04045d] mb-5">
+        TÀI SẢN (ASSETS)
+    </h3>
+
+    <div class="grid grid-cols-2 gap-6 mb-10">
+
+        <div>
+            <label>Tiền mặt</label>
+
+            <input
+            type="number"
+            min="0"
+            id="cash"
+            class="w-full border p-3 mt-2 rounded">
+        </div>
+
+        <div>
+            <label>Tiết kiệm</label>
+
+            <input
+            type="number"
+            min="0"
+            id="saving"
+            class="w-full border p-3 mt-2 rounded">
+        </div>
+
+        <div>
+            <label>Tài sản cố định</label>
+
+            <input
+            type="number"
+            min="0"
+            id="fixedAssets"
+            class="w-full border p-3 mt-2 rounded">
+        </div>
+
+        <div>
+            <label>Tài sản khác</label>
+
+            <input
+            type="number"
+            min="0"
+            id="otherAssets"
+            class="w-full border p-3 mt-2 rounded">
+        </div>
+
+    </div>
+
+    <!-- LIABILITIES -->
+    <h3 class="text-xl font-bold text-[#04045d] mb-5">
+        NỢ PHẢI TRẢ (LIABILITIES)
+    </h3>
+
+    <div class="grid grid-cols-2 gap-6 mb-10">
+
+        <div>
+            <label>Nợ ngắn hạn</label>
+
+            <input
+            type="number"
+            min="0"
+            id="shortDebt"
+            class="w-full border p-3 mt-2 rounded">
+        </div>
+
+        <div>
+            <label>Nợ dài hạn</label>
+
+            <input
+            type="number"
+            min="0"
+            id="longDebt"
+            class="w-full border p-3 mt-2 rounded">
+        </div>
+    </div>
+
+    <!-- CASHFLOW -->
+    <h3 class="text-xl font-bold text-[#04045d] mb-5">
+        THU CHI HÀNG THÁNG (MONTHLY INCOME & EXPENSES)
+    </h3>
+
+    <div class="grid grid-cols-2 gap-6">
+
+        <div>
+            <label>Thu nhập hàng tháng</label>
+
+            <input
+            type="number"
+            min="0"
+            id="monthlyIncome"
+            class="w-full border p-3 mt-2 rounded">
+        </div>
+
+        <div>
+            <label>Chi phí hàng tháng</label>
+
+            <input
+            type="number"
+            min="0"
+            id="monthlyExpense"
+            class="w-full border p-3 mt-2 rounded">
+        </div>
+
+    </div>
+
+</div>
+
+<!-- SURVEY -->
+ <div class="mb-12">
+
+            <h2 class="text-2xl font-black text-[#04045d] border-b-2 border-[#04045d] pb-2 mb-8">
+                KHẢO SÁT ĐẦU TƯ
+                  <span class="text-gray-500 text-lg">
+            (INVESMENT SURVEY)
+        </span>
+            </h2>
+
+            <div class="grid grid-cols-3 gap-6 mb-10">
+
+                <div>
+                    <label>Mức chấp nhận rủi ro (%)</label>
+
+                    <input type="number"
+                    id="riskPercent"
+                    class="w-full border p-3 mt-2 rounded">
+                </div>
+
+                <div>
+                    <label>Lợi suất kỳ vọng (%)</label>
+
+                    <input type="number"
+                    id="expectedReturn"
+                    class="w-full border p-3 mt-2 rounded">
+                </div>
+
+                <div>
+                    <label>Thời gian đầu tư</label>
+
+                    <select id="investmentHorizon"
+                    class="w-full border p-3 mt-2 rounded">
+
+                        <option>Short Term</option>
+                        <option>Medium Term</option>
+                        <option>Long Term</option>
+
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- 8 QUESTIONS -->
+            <div class="space-y-8">
+
+                <div>
+                    <p class="font-bold mb-3">
+                        1. Mục tiêu đầu tư của bạn là gì?
+                    </p>
+
+                    <select class="risk-question w-full border p-3 rounded">
+
+                        <option value="1">Bảo toàn vốn và tránh rủi ro</option>
+                        <option value="2">Tăng trưởng vốn ổn định kết hợp với bảo toàn vốn</option>
+                        <option value="3">Tăng trưởng vốn nhanh nhưng vẫn chú trọng đến an toàn 1 phần</option>
+                        <option value="4">Tìm kiếm lợi nhuận cực cao mặc dù có rủi ro lớn</option>
+
+                    </select>
+                </div>
+
+                <div>
+                    <p class="font-bold mb-3">
+                        2. Nếu danh mục đầu tư của bạn giảm 20% trong thời gian ngắn bạn sẽ làm gì?
+                    </p>
+
+                    <select class="risk-question w-full border p-3 rounded">
+
+                        <option value="1">Bán ra ngay để cắt lỗ</option>
+                        <option value="2">Cảm thấy lo lắng nhưng giữ nguyên danh mục và chờ phục hồin</option>
+                        <option value="3">Xem đây là cơ hội để mua vào thêm</option>
+                        <option value="4">Mua vào ngay lập tức vì tin thị trường sẽ phục hồi</option>
+
+                    </select>
+                </div>
+
+                <div>
+                    <p class="font-bold mb-3">
+                        3. Mức độ hiểu biết của bạn về thị trường tài chính là:
+                    </p>
+
+                    <select class="risk-question w-full border p-3 rounded">
+
+                        <option value="1">Rất ít kinh nghiệm</option>
+                        <option value="2">Hiểu biết cơ bản, mới bắt đầu đầu tư</option>
+                        <option value="3">Trung bình – theo dõi và nghiên cứu thường xuyên</option>
+                        <option value="4">Rất hiểu biết, có chiến lược đầu tư riêng</option>
+
+                    </select>
+                </div>
+
+                <div>
+                    <p class="font-bold mb-3">
+                        4. Khi nghe tin về cơ hội đầu tư với lợi nhuận cao nhưng rủi ro lớn, bạn sẽ:
+                    </p>
+
+                    <select class="risk-question w-full border p-3 rounded">
+
+                        <option value="1">Không đầu tư vì quá rủi ro</option>
+                        <option value="2">Đầu tư với số tiền nhỏ để thử nghiệm</option>
+                        <option value="3">Đầu tư một phần nếu có đủ thông tin và nghiên cứu kỹ</option>
+                        <option value="4">Đầu tư mạnh mẽ vì tin rằng lợi nhuận sẽ bù đắp rủi ro</option>
+
+                    </select>
+                </div>
+
+                <div>
+                    <p class="font-bold mb-3">
+                        5. Khi thị trường biến động mạnh, bạn thường:
+                    </p>
+
+                    <select class="risk-question w-full border p-3 rounded">
+
+                        <option value="1">Hoảng loạn và bán ra ngay</option>
+                        <option value="2">Cảm thấy lo lắng nhưng giữ bình tĩnh</option>
+                        <option value="3">Theo dõi sát sao và tìm cơ hội mua vào</option>
+                        <option value="4">Tận dụng biến động để đầu tư thêm</option>
+
+                    </select>
+                </div>
+
+                <div>
+                    <p class="font-bold mb-3">
+                        6. Trong bối cảnh kinh tế không ổn định, bạn sẽ:
+                    </p>
+
+                    <select class="risk-question w-full border p-3 rounded">
+
+                        <option value="1">Chuyển sang tài sản an toàn (tiền mặt, trái phiếu)</option>
+                        <option value="2">Giữ nguyên danh mục và theo dõi tình hình</option>
+                        <option value="3">Tìm cơ hội đầu tư vào cổ phiếu bị giảm giá</option>
+                        <option value="4">Mua vào thêm mạnh mẽ vì tin thị trường sẽ phục hồi</option>
+
+                    </select>
+                </div>
+
+                <div>
+                    <p class="font-bold mb-3">
+                        7. Khi có cơ hội đầu tư mạo hiểm với tiềm năng lợi nhuận lớn, bạn sẽ:
+                    </p>
+
+                    <select class="risk-question w-full border p-3 rounded">
+
+                        <option value="1">Từ chối vì không muốn mạo hiểm</option>
+                        <option value="2">Cân nhắc và đầu tư một phần nhỏ</option>
+                        <option value="3">Đầu tư nếu có sự tư vấn và nghiên cứu đầy đủ</option>
+                        <option value="4">Đầu tư mà không do dự</option>
+
+                    </select>
+                </div>
+
+                <div>
+                    <p class="font-bold mb-3">
+                        8. Bạn tự đánh giá khả năng chấp nhận rủi ro của mình là:
+                    </p>
+
+                    <select class="risk-question w-full border p-3 rounded">
+
+                        <option value="1">Rất thấp – ưu tiên an toàn tuyệt đối</option>
+                        <option value="2">Thấp – không muốn biến động quá lớn</option>
+                        <option value="3">Trung bình – sẵn sàng chịu rủi ro vừa phải để có lợi nhuận tốt hơn</option>
+                        <option value="4">Cao – sẵn sàng mạo hiểm để đạt được lợi nhuận vượt trội</option>
+
+                    </select>
+                </div>
+        
+        <div>
+            <p class="font-bold mb-3">
+                9. Mục tiêu đầu tư về thời gian của bạn là
+            </p>
+
+            <select class="risk-question w-full border p-3 rounded">
+                <option value="1">Ngắn hạn (dưới 3 năm)</option>
+                <option value="2">Trung hạn (3-5 năm)</option>
+                <option value="3">Dài hạn (5-10 năm)</option>
+                <option value="4">Rất dài hạn (trên 10 năm)</option>
+            </select>
+        </div>
+        <div>
+            <p class="font-bold mb-3">
+                10. Khoản tiền bạn sẵn sàng đầu tư (mà nếu mất đi vẫn đảm bảo cuộc sống) chiếm bao nhiêu % tổng tài sản?
+            </p>
+
+            <select class="risk-question w-full border p-3 rounded">
+                <option value="1">Dưới 10%</option>
+                <option value="2">Từ 10% - 25%</option>
+                <option value="3">Từ 25% - 50%</option>
+                <option value="4">Trên 50%</option>
+            </select>
+        </div>
+    </div>
+
+</div>
+
+<button type="submit"
+class="w-full bg-[#04045d] text-white py-5 rounded text-xl font-bold">
+
+    XÁC NHẬN
+
+</button>
+
+</form>
+
+<!-- ================= PDF TRANG 1 ================= -->
+<div id="pdfPage1" class="a4-page hidden mx-auto shadow-2xl relative overflow-hidden mt-8">
+    <div class="watermark"><img src="DOBN/logo.png" class="w-[500px]"></div>
+    <div class="content-layer p-12">
+
+        <!-- HEADER -->
+        <div class="flex items-center border-b-4 border-[#04045d] pb-6 mb-10">
+            <img src="DOBN/logo.png" class="report-logo mr-6">
+            <div>
+                <h1 class="text-5xl font-black text-[#04045d]">HTD SECURITIES</h1>
+                <p class="tracking-[5px] text-gray-500 mt-2">INVESTMENT RECOMMENDATION REPORT</p>
+            </div>
+        </div>
+
+        <!-- CLIENT -->
+        <div class="mb-10">
+            <h2 class="text-2xl font-black text-[#04045d] mb-5">
+                THÔNG TIN KHÁCH HÀNG
+                <span class="text-gray-500 text-lg">(CLIENT'S INFORMATION)</span>
+            </h2>
+            <div class="grid grid-cols-2 gap-5 text-sm">
+                <div><strong>NAME:</strong> <span id="pdfName"></span></div>
+                <div><strong>ID:</strong> <span id="pdfID"></span></div>
+                <div><strong>NATIONALITY:</strong> <span id="pdfNationality"></span></div>
+                <div><strong>EMAIL:</strong> <span id="pdfEmail"></span></div>
+                <div><strong>PHONE:</strong> <span id="pdfPhone"></span></div>
+                <div><strong>ADDRESS:</strong> <span id="pdfAddress"></span></div>
+            </div>
+        </div>
+
+        <!-- FINANCIAL -->
+        <div class="mb-10">
+            <h2 class="text-2xl font-black text-[#04045d] mb-6">
+                TÌNH HÌNH TÀI CHÍNH
+                <span class="text-gray-500 text-lg">(CLIENT'S FINANCIAL SITUATION)</span>
+            </h2>
+            <div class="grid grid-cols-2 gap-6">
+
+                <!-- ASSETS -->
+                <div class="border-2 border-[#04045d] rounded-xl p-5">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="font-black text-[#04045d] text-lg">ASSETS</h3>
+                        <span class="text-xs italic text-gray-400">Unit: VND</span>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between"><span>Cash</span><span id="pdfCash"></span></div>
+                        <div class="flex justify-between"><span>Saving</span><span id="pdfSaving"></span></div>
+                        <div class="flex justify-between"><span>Fixed Assets</span><span id="pdfFixedAssets"></span></div>
+                        <div class="flex justify-between"><span>Other Assets</span><span id="pdfOtherAssets"></span></div>
+                        <div class="border-t pt-3 flex justify-between font-black text-[#04045d]">
+                            <span>Total Assets</span><span id="pdfTotalAssets"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIABILITIES -->
+                <div class="border-2 border-[#04045d] rounded-xl p-5">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="font-black text-[#04045d] text-lg">LIABILITIES</h3>
+                        <span class="text-xs italic text-gray-400">Unit: VND</span>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between"><span>Short-term Debt</span><span id="pdfShortDebt"></span></div>
+                        <div class="flex justify-between"><span>Long-term Debt</span><span id="pdfLongDebt"></span></div>
+                        <div class="border-t pt-3 flex justify-between font-black text-[#04045d]">
+                            <span>Total Debt</span><span id="pdfTotalDebt"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CASHFLOW -->
+                <div class="border-2 border-[#04045d] rounded-xl p-5">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="font-black text-[#04045d] text-lg">MONTHLY CASHFLOW</h3>
+                        <span class="text-xs italic text-gray-400">Unit: VND</span>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between"><span>Monthly Income</span><span id="pdfIncome"></span></div>
+                        <div class="flex justify-between"><span>Monthly Expense</span><span id="pdfExpense"></span></div>
+                        <div class="border-t pt-3 flex justify-between font-black text-[#04045d]">
+                            <span>Net Cashflow</span><span id="pdfCashflow"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RATIOS -->
+                <div class="border-2 border-[#04045d] rounded-xl p-5">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="font-black text-[#04045d] text-lg">FINANCIAL INDICATE</h3>
+                        <span class="text-xs italic text-gray-400">Unit: %</span>
+                    </div>
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between"><span>Debt to Assets Ratio</span><span id="pdfDebtRatio"></span></div>
+                        <div class="flex justify-between"><span>Liquidity Ratio</span><span id="pdfLiquidRatio"></span></div>
+                        <div class="border-t pt-3 flex justify-between font-black text-[#04045d]">
+                            <span>Net Worth</span><span id="pdfNetWorth"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+<!-- FOOTER PDF -->
+<div style="position:absolute; bottom:24px; right:40px; text-align:right;">
+    <p style="font-size:11px; color:#04045d; font-weight:700; letter-spacing:1px;">
+        CÔNG TY CỔ PHẦN CHỨNG KHOÁN HTD
+    </p>
+</div>
+    </div>
+</div>
+
+<!-- ================= PDF TRANG 2 ================= -->
+<div id="pdfPage2" class="a4-page hidden mx-auto shadow-2xl relative overflow-hidden mt-4">
+    <div class="watermark"><img src="DOBN/logo.png" class="w-[500px]"></div>
+    <div class="content-layer p-12">
+
+        <!-- HEADER nhỏ trang 2 -->
+        <div class="flex items-center border-b-2 border-[#04045d] pb-4 mb-8">
+            <img src="DOBN/logo.png" class="report-logo mr-6">
+            <div>
+                <h1 class="text-3xl font-black text-[#04045d]">HTD SECURITIES</h1>
+                <p class="tracking-[3px] text-gray-500 text-sm mt-1">INVESTMENT RECOMMENDATION REPORT</p>
+            </div>
+        </div>
+
+        <!-- RISK -->
+        <div class="mb-10">
+            <h2 class="text-2xl font-black text-[#04045d] mb-5">RISK PROFILE</h2>
+            <div class="grid grid-cols-3 gap-5">
+                <div class="border rounded p-5 text-center">
+                    <p class="text-gray-500 text-sm">EXPECTED RETURN</p>
+                    <h3 id="pdfExpectedReturn" class="text-3xl font-black text-[#04045d] mt-3"></h3>
+                </div>
+                <div class="border rounded p-5 text-center">
+                    <p class="text-gray-500 text-sm">RISK TOLERANCE</p>
+                    <h3 id="pdfRisk" class="text-2xl font-black text-[#04045d] mt-3"></h3>
+                </div>
+                <div class="border rounded p-5 text-center">
+                    <p class="text-gray-500 text-sm">TIME HORIZON</p>
+                    <h3 id="pdfType" class="text-2xl font-black text-[#04045d] mt-3"></h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- STOCK -->
+        <div class="mb-10">
+            <h2 class="text-2xl font-black text-[#04045d] mb-6">RECOMMENDED STOCKS</h2>
+            <div id="recommendedStocksList" class="grid grid-cols-5 gap-4"></div>
+        </div>
+
+        <!-- NOTE -->
+        <div class="mt-10 border-t pt-6">
+            <h3 class="text-lg font-black text-[#04045d] mb-4">NOTE</h3>
+            <div class="space-y-3 text-[13px] leading-6 text-black">
+                <p>Các mã cổ phiếu được đề xuất dựa trên tình hình tài chính hiện tại, mục tiêu đầu tư và mức độ chấp nhận rủi ro của khách hàng tại thời điểm đánh giá.</p>
+                <p>Danh mục và các mã cổ phiếu được cung cấp chỉ mang tính chất tham khảo, không được xem là khuyến nghị mua, bán hoặc cam kết lợi nhuận đầu tư dưới bất kỳ hình thức nào.</p>
+                <p>Trong trường hợp khách hàng có nhu cầu triển khai đầu tư hoặc cần thêm thông tin tư vấn, vui lòng xác nhận thông qua địa chỉ email: Investment@DOBNCapital.com.vn</p>
+                <p>Toàn bộ thông tin cá nhân, tài chính và dữ liệu liên quan của khách hàng được Công ty cam kết bảo mật theo quy định nội bộ và các quy định pháp luật hiện hành.</p>
+            </div>
+        </div>
+<!-- FOOTER PDF -->
+<div style="position:absolute; bottom:24px; right:40px; text-align:right;">
+    <p style="font-size:11px; color:#04045d; font-weight:700; letter-spacing:1px;">
+        CÔNG TY CỔ PHẦN CHỨNG KHOÁN HTD
+    </p>
+</div>
+    </div>
+</div>
+
+<!-- DOWNLOAD -->
+<div id="downloadBtnContainer" class="hidden text-center mt-8">
+    <button onclick="downloadPDFFile()" class="bg-[#04045d] text-white px-10 py-4 rounded font-bold">
+        DOWNLOAD PDF
+    </button>
+</div>
+<!-- JS -->
+<script src="js/sendToGoogleSheet.js"></script>
+<script src="js/recommendation.js"></script>
+
+<script>
+
+document.getElementById('financialForm')
+.addEventListener('submit', function(e){
+
+    e.preventDefault();
+
+    // CLIENT
+    const name =
+    document.getElementById('custName').value;
+
+    const id =
+    document.getElementById('custID').value;
+
+    const nationality =
+    document.getElementById('custNationality').value;
+
+    const email =
+    document.getElementById('custEmail').value;
+
+    const phone =
+    document.getElementById('custPhone').value;
+
+    const address =
+    document.getElementById('custAddress').value;
+
+    // FINANCIAL
+    const cash =
+    Number(document.getElementById('cash').value);
+
+    const saving =
+    Number(document.getElementById('saving').value);
+
+    const fixedAssets =
+    Number(document.getElementById('fixedAssets').value);
+
+    const otherAssets =
+    Number(document.getElementById('otherAssets').value);
+
+    const shortDebt =
+    Number(document.getElementById('shortDebt').value);
+
+    const longDebt =
+    Number(document.getElementById('longDebt').value);
+
+    const income =
+    Number(document.getElementById('monthlyIncome').value);
+
+    const expense =
+    Number(document.getElementById('monthlyExpense').value);
+
+    const totalAssets =
+    cash + saving + fixedAssets + otherAssets;
+
+    const totalDebt =
+    shortDebt + longDebt;
+
+    const netWorth =
+    totalAssets - totalDebt;
+
+    const debtRatio =
+    totalAssets > 0
+    ? ((totalDebt / totalAssets) * 100).toFixed(1) + '%'
+    : '0%';
+
+    const liquidRatio =
+    totalDebt > 0
+    ? ((cash + saving) / totalDebt).toFixed(2)
+    : '0';
+
+    // SCORE
+    let totalScore = 0;
+
+    document.querySelectorAll('.risk-question')
+    .forEach(question => {
+
+        totalScore += Number(question.value);
+
+    });
+
+    // CLIENT INPUT
+    const expectedReturn =
+    Number(
+    document.getElementById('expectedReturn').value
+    );
+
+    const investmentHorizon =
+    document.getElementById('investmentHorizon').value;
+
+    // RISK
+    let riskLevel = '';
+    let investmentType = '';
+
+    if(totalScore <= 18){
+
+        riskLevel = 'LOW RISK';
+        investmentType = 'Conservative';
+
+    }
+    else if(totalScore <= 27){
+
+        riskLevel = 'MEDIUM RISK';
+        investmentType = 'Balanced';
+
+    }
+    else{
+
+        riskLevel = 'HIGH RISK';
+        investmentType = 'Aggressive';
+
+    }
+
+    // RECOMMEND
+    const recommendedStocks =
+    getRecommendations(
+        totalScore,
+        investmentType,
+        investmentHorizon
+    );
+
+    // CLIENT PDF
+    document.getElementById('pdfName').innerText = name;
+    document.getElementById('pdfID').innerText = id;
+    document.getElementById('pdfNationality').innerText = nationality;
+    document.getElementById('pdfEmail').innerText = email;
+    document.getElementById('pdfPhone').innerText = phone;
+    document.getElementById('pdfAddress').innerText = address;
+
+    // ASSETS
+    document.getElementById('pdfCash').innerText =
+    cash.toLocaleString('vi-VN') + ' VND';
+
+    document.getElementById('pdfSaving').innerText =
+    saving.toLocaleString('vi-VN') + ' VND';
+
+    document.getElementById('pdfFixedAssets').innerText =
+    fixedAssets.toLocaleString('vi-VN') + ' VND';
+
+    document.getElementById('pdfOtherAssets').innerText =
+    otherAssets.toLocaleString('vi-VN') + ' VND';
+
+    document.getElementById('pdfTotalAssets').innerText =
+    totalAssets.toLocaleString('vi-VN') + ' VND';
+
+    // DEBT
+    document.getElementById('pdfShortDebt').innerText =
+    shortDebt.toLocaleString('vi-VN') + ' VND';
+
+    document.getElementById('pdfLongDebt').innerText =
+    longDebt.toLocaleString('vi-VN') + ' VND';
+
+    document.getElementById('pdfTotalDebt').innerText =
+    totalDebt.toLocaleString('vi-VN') + ' VND';
+
+    // CASHFLOW
+    document.getElementById('pdfIncome').innerText =
+    income.toLocaleString('vi-VN') + ' VND';
+
+    document.getElementById('pdfExpense').innerText =
+    expense.toLocaleString('vi-VN') + ' VND';
+
+    document.getElementById('pdfCashflow').innerText =
+    (income - expense).toLocaleString('vi-VN') + ' VND';
+
+    // RATIOS
+    document.getElementById('pdfDebtRatio').innerText =
+    debtRatio;
+
+    document.getElementById('pdfLiquidRatio').innerText =
+    liquidRatio;
+
+    document.getElementById('pdfNetWorth').innerText =
+    netWorth.toLocaleString('vi-VN') + ' VND';
+
+    // RISK
+    document.getElementById('pdfExpectedReturn').innerText =
+    expectedReturn + '%';
+
+    document.getElementById('pdfRisk').innerText =
+    riskLevel;
+
+    document.getElementById('pdfType').innerText =
+    investmentHorizon;
+
+    // STOCKS
+    const container =
+    document.getElementById('recommendedStocksList');
+
+    container.innerHTML = '';
+
+    recommendedStocks.forEach(stock => {
+
+        container.innerHTML += `
+
+        <a href="png/${stock.code === 'BID' ? 'BIDV' : stock.code}.png"
+        target="_blank"
+        class="border rounded-xl p-4 text-center hover:shadow-xl transition bg-white">
+
+            <img src="logo/${stock.code}.png"
+            class="w-16 h-16 object-contain mx-auto mb-3">
+
+            <h3 class="font-black text-[#04045d]">
+                ${stock.code}
+            </h3>
+
+            <p class="text-[10px] text-gray-500 mt-1 leading-4">
+                ${stock.name}
+            </p>
+
+        </a>
+
+        `;
+
+    });
+
+    // SAVE TO GOOGLE SHEET
+    sendToGoogleSheet({
+
+        name,
+        phone,
+        email,
+        nationality,
+
+        totalScore,
+
+        riskTolerance: riskLevel,
+
+        timeHorizon: investmentHorizon,
+
+        stock1: recommendedStocks[0]?.code || '',
+        stock2: recommendedStocks[1]?.code || '',
+        stock3: recommendedStocks[2]?.code || '',
+        stock4: recommendedStocks[3]?.code || '',
+        stock5: recommendedStocks[4]?.code || ''
+
+    });
+
+    // SHOW PDF
+
+    document.getElementById('pdfPage1').classList.remove('hidden');
+document.getElementById('pdfPage2').classList.remove('hidden');
+document.getElementById('downloadBtnContainer').classList.remove('hidden');
+
+});
+
+async function downloadPDFFile() {
+    const { jsPDF } = window.jspdf;
+    const page1 = document.getElementById('pdfPage1');
+    const page2 = document.getElementById('pdfPage2');
+    page1.classList.remove('hidden');
+    page2.classList.remove('hidden');
+
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    const canvas1 = await html2canvas(page1, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+    pdf.addImage(canvas1.toDataURL('image/png'), 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+    pdf.addPage();
+    const canvas2 = await html2canvas(page2, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+    pdf.addImage(canvas2.toDataURL('image/png'), 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+    pdf.save('HTD_Securities_Report.pdf');
+}
+</script>
+    </div> 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VVRTLD2GMN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VVRTLD2GMN');
+</script>
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 HTD SECURITIES - Demo Website</p>
+</footer>
+
+</body>
+</html>

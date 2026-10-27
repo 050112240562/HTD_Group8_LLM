@@ -1,0 +1,8 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');
+const Money=require('../js/money-input.js');
+test('Vietnamese grouped values remain exact integer dong',()=>{assert.equal(Money.parse('8.000.000'),8000000);assert.equal(Money.format(8000000),'8.000.000');assert.equal(Money.parse('100000000'),100000000);});
+test('Blank remains unknown and zero remains a supplied amount',()=>{assert.equal(Money.parse(''),null);assert.equal(Money.format(null),'');assert.equal(Money.parse('0'),0);assert.equal(Money.format(0),'0');});
+test('Pasted comma and space thousand groups are unambiguous',()=>{assert.equal(Money.parse('8,000,000'),8000000);assert.equal(Money.parse('8 000 000'),8000000);assert.equal(Money.parse('8\u00a0000\u00a0000'),8000000);});
+test('Malformed groups and decimal inputs are rejected instead of changing value',()=>{for(const x of ['8.5','8,5','8.000,50','8.00.000','-8000000','8 triệu','NaN','Infinity'])assert.throws(()=>Money.parse(x),undefined,x);});
+test('Unsafe integers cannot silently lose precision',()=>{assert.throws(()=>Money.parse('9.007.199.254.740.992'));assert.throws(()=>Money.format(8000000.5));});
+test('Editing a digit retains numeric value and caret after regrouping',()=>{const events={};const input={dataset:{},value:'8.000.0001',selectionStart:10,setAttribute(){},removeAttribute(){},setCustomValidity(v){this.validityMessage=v;},setSelectionRange(a,b){this.selectionStart=a;this.selectionEnd=b;},addEventListener(k,fn){events[k]=fn;}};Money.bind(input);events.input({inputType:'insertText',data:'1'});assert.equal(input.value,'80.000.001');assert.equal(Money.parse(input.value),80000001);assert.equal(input.selectionStart,input.value.length);});
